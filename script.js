@@ -1,25 +1,39 @@
-var x = 4;
-var y = 3;
+var num1 = 4;
+var num2 = 3;
+var operator;
 
 // Addition
-function add(x, y) {
-    return x + y;
+function add(num1, num2) {
+    return num1 + num2;
 }
-console.log(add(x, y));
 
 // Subtraction
-function subtract(x, y) {
-    return x - y;
+function subtract(num1, num2) {
+    return num1 - num2;
 }
-console.log(subtract(x, y));
 
 // Multiplication
-function multiply(x, y) {
-    return x * y;
+function multiply(num1, num2) {
+    return num1 * num2;
 }
-console.log(multiply(x, y));
 
-function divide(x, y) {
-    return x / y;
+// Division
+function divide(num1, num2) {
+    return num1 / num2;
 }
-console.log(divide(x, y));
+
+// Operation control
+function operate(operator, num1, num2) {
+    if(operator == "add") {
+        return add(num1, num2);
+    }
+    if(operator == "subtract") {
+        return subtract(num1, num2);
+    }
+    if(operator == "multiply") {
+        return multiply(num1, num2);
+    }
+    if(operator == "divide") {
+        return divide(num1, num2);
+    }
+}
