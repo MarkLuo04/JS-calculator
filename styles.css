@@ -1,31 +1,95 @@
+/* Body Styling */
 body {
     display: flex;
     justify-content: center;
     align-items: center;
     font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    height: 100vh;
+    margin: 0;
 }
 
+/* Calculator Container */
 .calculator {
     display: flex;
     flex-direction: column;
     width: 300px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
 }
 
+/* Display */
+.display {
+    background-color: #222;
+    color: #fff;
+    font-size: 2rem;
+    text-align: right;
+    padding: 20px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-bottom: 2px solid #ccc;
+}
+
+/* Buttons Container */
 .buttons {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 5px;
-    padding: 10px;
+    gap: 10px;
+    padding: 15px;
+    background-color: #f1f5f9;
 }
 
+/* Button Styling */
 button {
-    flex: 1 0 22%; /* Buttons take up 22% of the row, with flexible scaling */
-    height: 50px;
-    font-size: 1.2rem;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    flex: 1 0 22%;
+    height: 60px;
+    font-size: 1.5rem;
+    background-color: #e8ebed;
+    border: none;
+    border-radius: 10px;
+    color: #333;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Hover and Active States */
+button:hover {
+    background-color: #d1d5db;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* Special Button Styling */
+button.operators {
+    background-color: #f9c74f;
+    color: #fff;
+}
+
+button.operators:hover {
+    background-color: #f6b042;
+}
+
+button.clear {
+    background-color: #e63946;
+    color: #fff;
+}
+
+button.clear:hover {
+    background-color: #d62839;
+}
+
+button.equals {
+    background-color: #38b000;
+    color: #fff;
+}
+
+button.equals:hover {
+    background-color: #2a9d00;
 }
