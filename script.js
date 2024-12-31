@@ -1,123 +1,188 @@
-let num1 = null; 
+// Calculator State
+let displayValue = "0";
+let num1 = null;
 let num2 = null;
 let operator = null;
-let displayValue = "0";
 let resetDisplay = false;
 
 // Basic Operations
-function add(num1, num2) {
-    return num1 + num2;
+function add(a, b) {
+  return a + b;
+}
+function subtract(a, b) {
+  return a - b;
+}
+function multiply(a, b) {
+  return a * b;
+}
+function divide(a, b) {
+  return b !== 0 ? a / b : "Error"; // Avoid divide-by-zero
+}
+function squareRoot(a) {
+  return a < 0 ? "Error" : Math.sqrt(a);
 }
 
-function subtract(num1, num2) {
-    return num1 - num2;
-}
-
-function multiply(num1, num2) {
-    return num1 * num2;
-}
-
-function divide(num1, num2) {
-    return num2 !== 0 ? num1 / num2 : "Error"; // Avoid divide by zero
-}
-
-// Update Display
+// Update the Display
 function updateDisplay() {
-    const display = document.querySelector(".display");
-    display.textContent = displayValue;
+  const display = document.querySelector(".display");
+  display.textContent = displayValue;
 }
 
-// Handle Digit Click
-function handleDigitClick(event) {
-    const digit = event.target.getAttribute("data-value");
+// Handle Digit Click (0-9 or ".")
+function handleDigitClick(e) {
+  const digit = e.target.getAttribute("data-value");
 
-    if (resetDisplay) {
-        displayValue = digit; // Start fresh after operator
-        resetDisplay = false;
-    } else if (displayValue === "0") {
-        displayValue = digit; // Replace leading zero
-    } else {
-        displayValue += digit; // Append digit
-    }
-
-    updateDisplay();
-}
-
-function operatorClick(event) {
-    const selectedOperator = event.target.getAttribute("data-value");
-
-    if (num1 === null) {
-        // First number input
-        num1 = parseFloat(displayValue);
-    } else if (!resetDisplay) {
-        // Perform the operation only if a number has been entered after the last operator
-        num2 = parseFloat(displayValue);
-        num1 = operate(operator, num1, num2); // Perform operation
-        displayValue = num1.toString();
-        updateDisplay();
-    }
-
-    operator = selectedOperator; // Update the operator
-    resetDisplay = true; // Prepare for the next input
-}
-
-function equalsClick() {
-    if (operator && num1 !== null) {
-        // If the second number hasn't been entered, treat it as `0`
-        num2 = parseFloat(displayValue) || 0;
-
-        const result = operate(operator, num1, num2);
-        displayValue = result === "Error" ? "Error" : result.toString();
-        updateDisplay();
-
-        // Reset for the next calculation
-        num1 = result; // Store result as num1 for chaining
-        num2 = null;
-        operator = null;
-        resetDisplay = true; // Prepare for new input
-    }
-}
-
-
-// Handle Clear Click
-function clearClick() {
+  // If we're coming from an error, reset to "0" first
+  if (displayValue === "Error") {
+    displayValue = "0";
     num1 = null;
     num2 = null;
     operator = null;
-    displayValue = "0";
+  }
+
+  // Prevent multiple decimals in the same number
+  if (digit === "." && displayValue.includes(".")) {
+    return;
+  }
+
+  if (resetDisplay) {
+    // If we just pressed an operator or "=", start fresh
+    displayValue = digit;
     resetDisplay = false;
-    updateDisplay();
+  } else if (displayValue === "0" && digit !== ".") {
+    // Replace leading zero (unless it's "0.")
+    displayValue = digit;
+  } else {
+    // Append the digit
+    displayValue += digit;
+  }
+
+  updateDisplay();
 }
 
-// Perform Operation
-function operate(operator, num1, num2) {
-    switch (operator) {
-        case "+":
-            return add(num1, num2);
-        case "-":
-            return subtract(num1, num2);
-        case "*":
-            return multiply(num1, num2);
-        case "/":
-            return divide(num1, num2);
-        default:
-            return null;
-    }
+// Handle Operator Click 
+function handleOperatorClick(e) {
+  const selectedOperator = e.target.getAttribute("data-value");
+
+  // First time an operator is pressed
+  if (num1 === null) {
+    num1 = parseFloat(displayValue);
+  } 
+  // If we already have a num1 and just entered another number
+  else if (!resetDisplay) {
+    num2 = parseFloat(displayValue);
+    const result = operate(operator, num1, num2);
+    displayValue = result.toString();
+    num1 = (result === "Error") ? null : result; 
+    updateDisplay();
+  }
+
+  operator = selectedOperator;
+  resetDisplay = true; // next digit press starts a new number
+}
+
+// Handle Equals 
+function handleEqualsClick() {
+  if (operator && num1 !== null) {
+    num2 = parseFloat(displayValue) || 0;
+
+    const result = operate(operator, num1, num2);
+    displayValue = (result === "Error") ? "Error" : result.toString();
+    updateDisplay();
+
+    // Prepare for continued calculations
+    num1 = (result === "Error") ? null : result;
+    num2 = null;
+    operator = null;
+    resetDisplay = true;
+  }
+}
+
+// Choosing an operation
+function operate(op, a, b) {
+  switch (op) {
+    case "+":
+      return add(a, b);
+    case "-":
+      return subtract(a, b);
+    case "*":
+      return multiply(a, b);
+    case "/":
+      return divide(a, b);
+    default:
+      return null;
+  }
+}
+
+// Handle Square Root
+function handleSqrtClick() {
+  const currentNum = parseFloat(displayValue);
+
+  const result = squareRoot(currentNum);
+  displayValue = (result === "Error") ? "Error" : result.toString();
+  updateDisplay();
+
+  // If not an error, store as num1
+  if (result !== "Error") {
+    num1 = result;
+  } else {
+    num1 = null;
+  }
+  num2 = null;
+  operator = null;
+  resetDisplay = true;
+}
+
+// Handle Backspace
+function handleBackspaceClick() {
+  if (displayValue === "Error") {
+    // If we were on "Error," reset to 0
+    displayValue = "0";
+    updateDisplay();
+    return;
+  }
+
+  // If we only have one digit left
+  if (displayValue.length === 1 ||
+      (displayValue.startsWith("-") && displayValue.length === 2)) {
+    displayValue = "0";
+  } else {
+    displayValue = displayValue.slice(0, -1); 
+  }
+  updateDisplay();
+}
+
+// Handle Clear 
+function handleClearClick() {
+  displayValue = "0";
+  num1 = null;
+  num2 = null;
+  operator = null;
+  resetDisplay = false;
+  updateDisplay();
 }
 
 // Event Listeners
 const digitButtons = document.querySelectorAll(".nums");
-digitButtons.forEach((button) => {
-    button.addEventListener("click", handleDigitClick);
+digitButtons.forEach(btn => {
+  btn.addEventListener("click", handleDigitClick);
 });
 
 const operatorButtons = document.querySelectorAll(".operators");
-operatorButtons.forEach((button) => {
-    button.addEventListener("click", operatorClick);
+operatorButtons.forEach(btn => {
+  // Differentiate sqrt from other operators
+  if (btn.getAttribute("data-value") === "sqrt") {
+    btn.addEventListener("click", handleSqrtClick);
+  } else {
+    btn.addEventListener("click", handleOperatorClick);
+  }
 });
 
 const equalsButton = document.querySelector(".equals");
-equalsButton.addEventListener("click", equalsClick);
+equalsButton.addEventListener("click", handleEqualsClick);
 
 const clearButton = document.querySelector(".clear");
-clearButton.addEventListener("click", clearClick);
+clearButton.addEventListener("click", handleClearClick);
+
+const backspaceButton = document.querySelector(".backspace");
+backspaceButton.addEventListener("click", handleBackspaceClick);
