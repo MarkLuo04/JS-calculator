@@ -42,21 +42,33 @@ function updateDisplay() {
 
 // Format display numbers
 function formatDisplayValue(value) {
-  if (value === "Error" || isNaN(value)) {
-    return "Error";
-  }
-
-  // Convert string to a float
-  const num = parseFloat(value);
-
-  // Scientific notation
-  if (Math.abs(num) >= 1e9 || (num !== 0 && Math.abs(num) < 1e-6)) {
-    return num.toExponential(12);
-  } else {
-    // Round to 12 significant digits 
-    return +num.toPrecision(12) + "";
-  }
+    if (value === "Error" || isNaN(value)) {
+      return "Error";
+    }
+    const num = parseFloat(value);
+  
+    // If infinite or NaN after parsing:
+    if (!isFinite(num)) {
+      return "Error";
+    }
+  
+    // Exponential numbers
+    if (Math.abs(num) >= 1e9 || (num !== 0 && Math.abs(num) < 1e-6)) {
+      return num.toExponential(12);
+    }
+  
+    // If it's an integer, display as integer
+    if (Number.isInteger(num)) {
+      return num.toString();
+    }
+  
+    // Up to 12 decimal places
+    let output = num.toFixed(12);
+    output = output.replace(/(\.\d*?[1-9])0+$/, "$1"); // remove trailing zeros
+    output = output.replace(/\.$/, "");               // remove trailing decimal
+    return output;
 }
+
 
 // Handles digits
 function handleDigitClick(e) {
