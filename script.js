@@ -16,23 +16,53 @@ function multiply(a, b) {
   return a * b;
 }
 function divide(a, b) {
-  return b !== 0 ? a / b : "Error"; // Avoid divide-by-zero
+  return b !== 0 ? a / b : "Error"; // Avoid dividing by zero
 }
 function squareRoot(a) {
   return a < 0 ? "Error" : Math.sqrt(a);
 }
 
-// Update the Display
-function updateDisplay() {
+// Updating display for initial inputs (no formatting)
+function updateDisplayNoFormat() {
   const display = document.querySelector(".display");
   display.textContent = displayValue;
 }
 
-// Handle Digit Click (0-9 or ".")
+// Update Display
+function updateDisplay() {
+  const display = document.querySelector(".display");
+
+  // Only format if it's not error 
+  if (displayValue !== "Error") {
+    displayValue = formatDisplayValue(displayValue);
+  }
+
+  display.textContent = displayValue;
+}
+
+// Format display numbers
+function formatDisplayValue(value) {
+  if (value === "Error" || isNaN(value)) {
+    return "Error";
+  }
+
+  // Convert string to a float
+  const num = parseFloat(value);
+
+  // Scientific notation
+  if (Math.abs(num) >= 1e9 || (num !== 0 && Math.abs(num) < 1e-6)) {
+    return num.toExponential(12);
+  } else {
+    // Round to 12 significant digits 
+    return +num.toPrecision(12) + "";
+  }
+}
+
+// Handles digits
 function handleDigitClick(e) {
   const digit = e.target.getAttribute("data-value");
 
-  // If we're coming from an error, reset to "0" first
+  // If display shows Error, reset
   if (displayValue === "Error") {
     displayValue = "0";
     num1 = null;
@@ -40,27 +70,30 @@ function handleDigitClick(e) {
     operator = null;
   }
 
-  // Prevent multiple decimals in the same number
+  // Prevent multiple decimals
   if (digit === "." && displayValue.includes(".")) {
     return;
   }
 
+  // Max 12 characters
+  if (displayValue.length >= 12 && !resetDisplay) {
+    return;
+  }
+
   if (resetDisplay) {
-    // If we just pressed an operator or "=", start fresh
     displayValue = digit;
     resetDisplay = false;
   } else if (displayValue === "0" && digit !== ".") {
-    // Replace leading zero (unless it's "0.")
     displayValue = digit;
   } else {
-    // Append the digit
     displayValue += digit;
   }
 
-  updateDisplay();
+  // No formatting when inputting
+  updateDisplayNoFormat();
 }
 
-// Handle Operator Click 
+// Handle Operator Click
 function handleOperatorClick(e) {
   const selectedOperator = e.target.getAttribute("data-value");
 
@@ -81,13 +114,14 @@ function handleOperatorClick(e) {
   resetDisplay = true; // next digit press starts a new number
 }
 
-// Handle Equals 
+// Handle Equals
 function handleEqualsClick() {
   if (operator && num1 !== null) {
     num2 = parseFloat(displayValue) || 0;
 
     const result = operate(operator, num1, num2);
     displayValue = (result === "Error") ? "Error" : result.toString();
+    // After pressing equals, apply format
     updateDisplay();
 
     // Prepare for continued calculations
@@ -120,6 +154,7 @@ function handleSqrtClick() {
 
   const result = squareRoot(currentNum);
   displayValue = (result === "Error") ? "Error" : result.toString();
+  // After sqrt, we apply format
   updateDisplay();
 
   // If not an error, store as num1
@@ -136,30 +171,32 @@ function handleSqrtClick() {
 // Handle Backspace
 function handleBackspaceClick() {
   if (displayValue === "Error") {
-    // If we were on "Error," reset to 0
     displayValue = "0";
-    updateDisplay();
+    // No-format update when manually editing
+    updateDisplayNoFormat();
     return;
   }
 
-  // If we only have one digit left
-  if (displayValue.length === 1 ||
-      (displayValue.startsWith("-") && displayValue.length === 2)) {
+  if (
+    displayValue.length === 1 ||
+    (displayValue.startsWith("-") && displayValue.length === 2)
+  ) {
     displayValue = "0";
   } else {
     displayValue = displayValue.slice(0, -1); 
   }
-  updateDisplay();
+
+  updateDisplayNoFormat();
 }
 
-// Handle Clear 
+// Handle Clear
 function handleClearClick() {
   displayValue = "0";
   num1 = null;
   num2 = null;
   operator = null;
   resetDisplay = false;
-  updateDisplay();
+  updateDisplayNoFormat();
 }
 
 // Event Listeners
@@ -170,7 +207,6 @@ digitButtons.forEach(btn => {
 
 const operatorButtons = document.querySelectorAll(".operators");
 operatorButtons.forEach(btn => {
-  // Differentiate sqrt from other operators
   if (btn.getAttribute("data-value") === "sqrt") {
     btn.addEventListener("click", handleSqrtClick);
   } else {
