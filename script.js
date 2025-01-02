@@ -42,31 +42,32 @@ function updateDisplay() {
 
 // Format display numbers
 function formatDisplayValue(value) {
-    if (value === "Error" || isNaN(value)) {
-      return "Error";
-    }
+    // Return Error if invalid
+    if (value === "Error" || isNaN(value)) return "Error";
     const num = parseFloat(value);
+    if (!isFinite(num)) return "Error";
   
-    // If infinite or NaN after parsing:
-    if (!isFinite(num)) {
-      return "Error";
+    // Up to 12 digits in plain format
+    if (Math.abs(num) < 1e9 && (num === 0 || Math.abs(num) >= 1e-6)) {
+      let normal = num.toPrecision(12);
+      // If it's not in exponent form, remove trailing zeros
+      if (!normal.includes("e")) {
+        normal = normal.replace(/(\.\d*?[1-9])0+$/, "$1");
+        normal = normal.replace(/\.$/, "");
+      }
+      // If that fits 12 chars or fewer, return it
+      if (normal.length <= 12) return normal;
+      // Otherwise, switch to exponential
     }
   
-    // Exponential numbers
-    if (Math.abs(num) >= 1e9 || (num !== 0 && Math.abs(num) < 1e-6)) {
-      return num.toExponential(12);
+    // Exponential total length at 12
+    for (let i = 12; i >= 1; i--) {
+      const test = num.toExponential(i); 
+      if (test.length <= 12) return test;
     }
   
-    // If it's an integer, display as integer
-    if (Number.isInteger(num)) {
-      return num.toString();
-    }
-  
-    // Up to 12 decimal places
-    let output = num.toFixed(12);
-    output = output.replace(/(\.\d*?[1-9])0+$/, "$1"); // remove trailing zeros
-    output = output.replace(/\.$/, "");               // remove trailing decimal
-    return output;
+    // Fallback if somehow everything else fails
+    return num.toExponential(1);
 }
 
 
