@@ -42,31 +42,33 @@ function updateDisplay() {
 
 // Format display numbers
 function formatDisplayValue(value) {
-    // Return Error if invalid
     if (value === "Error" || isNaN(value)) return "Error";
     const num = parseFloat(value);
     if (!isFinite(num)) return "Error";
   
-    // Up to 12 digits in plain format
-    if (Math.abs(num) < 1e9 && (num === 0 || Math.abs(num) >= 1e-6)) {
-      let normal = num.toPrecision(12);
-      // If it's not in exponent form, remove trailing zeros
-      if (!normal.includes("e")) {
-        normal = normal.replace(/(\.\d*?[1-9])0+$/, "$1");
-        normal = normal.replace(/\.$/, "");
-      }
-      // If that fits 12 chars or fewer, return it
+    // 1) If the result is an integer (e.g., 4), just return it if it fits:
+    if (Number.isInteger(num)) {
+      const normal = num.toString();
       if (normal.length <= 12) return normal;
-      // Otherwise, switch to exponential
+      // Otherwise, fall back to exponential with a length check:
+      for (let i = 12; i >= 1; i--) {
+        const candidate = num.toExponential(i);
+        if (candidate.length <= 12) return candidate;
+      }
+      return num.toExponential(1);
     }
   
-    // Exponential total length at 12
+    // 2) For non-integers, try up to 12 decimals in plain form, then check length:
+    let normal = num.toFixed(12);
+    normal = normal.replace(/(\.\d*?[1-9])0+$/, "$1"); // remove trailing zeros
+    normal = normal.replace(/\.$/, "");               // remove trailing dot if any
+    if (normal.length <= 12) return normal;
+  
+    // 3) If it's still too long or too big/small, switch to exponential:
     for (let i = 12; i >= 1; i--) {
-      const test = num.toExponential(i); 
-      if (test.length <= 12) return test;
+      const candidate = num.toExponential(i);
+      if (candidate.length <= 12) return candidate;
     }
-  
-    // Fallback if somehow everything else fails
     return num.toExponential(1);
 }
 
