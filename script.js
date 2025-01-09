@@ -38,9 +38,8 @@ function updateDisplay() {
   display.textContent = displayValue;
 }
 
-// Format integers
+// Format integers 
 function formatDisplayValue(value) {
-  // Return "Error" if invalid
   if (value === "Error" || isNaN(value)) return "Error";
   const num = parseFloat(value);
   if (!isFinite(num)) return "Error";
@@ -55,18 +54,17 @@ function formatDisplayValue(value) {
       return trimDecimal(intString);
     }
 
-    // Non-integer up to 15 decimals
-    let dec = num.toFixed(15);
-    // Remove trailing zeros
-    dec = dec.replace(/(\.\d*?[1-9])0+$/, "$1").replace(/\.$/, "");
-    
+    // Convert to string
+    let dec = num.toString();
+
     // If it fits, use it
     if (dec.length <= 12) return dec;
+
     // Otherwise trim
     return trimDecimal(dec);
   }
 
-  // Exponential notation
+  // Exponential notation if bigger than 1e11
   for (let i = 15; i >= 1; i--) {
     const expStr = num.toExponential(i);
     if (expStr.length <= 12) return expStr;
@@ -137,7 +135,6 @@ function handleOperatorClick(e) {
 
 // Handles Keyboard Inputs
 function handleDigitFromKeyboard(digit) {
-  // If display is "Error", reset first
   if (displayValue === "Error") {
     displayValue = "0";
     num1 = null;
@@ -145,12 +142,10 @@ function handleDigitFromKeyboard(digit) {
     operator = null;
   }
 
-  // Prevent multiple decimals
   if (digit === "." && displayValue.includes(".")) {
     return;
   }
 
-  // If we reached 12 characters, don't add any more
   if (displayValue.length >= 12 && !resetDisplay) {
     return;
   }
@@ -164,7 +159,6 @@ function handleDigitFromKeyboard(digit) {
     displayValue += digit;
   }
 
-  // No formatting when inputting, just like handleDigitClick
   updateDisplayNoFormat();
 }
 
@@ -268,14 +262,11 @@ clearButton.addEventListener("click", handleClearClick);
 const backspaceButton = document.querySelector(".backspace");
 backspaceButton.addEventListener("click", handleBackspaceClick);
 
-
 // Keydown listeners for digits, decimal and backspace
 document.addEventListener("keydown", (e) => {
   if (e.key >= "0" && e.key <= "9") {
-    // If the user presses 0-9
     handleDigitFromKeyboard(e.key);
   } else if (e.key === ".") {
-    // Decimal point
     handleDigitFromKeyboard(".");
   } else if (e.key === "Backspace") {
     handleBackspaceClick();
