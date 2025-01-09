@@ -133,7 +133,7 @@ function handleOperatorClick(e) {
   resetDisplay = true;
 }
 
-// Handles Keyboard Inputs
+// Handles digits inputted from keyboard
 function handleDigitFromKeyboard(digit) {
   if (displayValue === "Error") {
     displayValue = "0";
@@ -161,6 +161,22 @@ function handleDigitFromKeyboard(digit) {
 
   updateDisplayNoFormat();
 }
+
+// Handles operators from keyboard input
+function handleOperatorFromKeyboard(selectedOperator) {
+  if (num1 === null) {
+    num1 = parseFloat(displayValue);
+  } else if (!resetDisplay) {
+    num2 = parseFloat(displayValue);
+    const result = operate(operator, num1, num2);
+    displayValue = result.toString();
+    num1 = (result === "Error") ? null : result;
+    updateDisplay();
+  }
+  operator = selectedOperator;
+  resetDisplay = true;
+}
+
 
 // Handle Equals
 function handleEqualsClick() {
@@ -262,7 +278,7 @@ clearButton.addEventListener("click", handleClearClick);
 const backspaceButton = document.querySelector(".backspace");
 backspaceButton.addEventListener("click", handleBackspaceClick);
 
-// Keydown listeners for digits, decimal and backspace
+// Keydown listeners
 document.addEventListener("keydown", (e) => {
   if (e.key >= "0" && e.key <= "9") {
     handleDigitFromKeyboard(e.key);
@@ -270,5 +286,24 @@ document.addEventListener("keydown", (e) => {
     handleDigitFromKeyboard(".");
   } else if (e.key === "Backspace") {
     handleBackspaceClick();
+  } 
+  // operators, equals, clear, and sqrt
+  else if (e.key === "Enter") {
+    handleEqualsClick();
+  } else if (e.key === "+") {
+    handleOperatorFromKeyboard("+");
+  } else if (e.key === "-") {
+    handleOperatorFromKeyboard("-");
+  } else if (e.key === "/") {
+    handleOperatorFromKeyboard("/");
+  } else if (e.key === "*") {
+    handleOperatorFromKeyboard("*");
+  } else if (e.key === "Escape") {
+    handleClearClick();
+  } 
+  // For square root, we can choose "s" or "S"
+  else if (e.key === "s" || e.key === "S") {
+    handleSqrtClick();
   }
 });
+
