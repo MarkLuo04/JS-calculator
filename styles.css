@@ -4,22 +4,22 @@ body {
     justify-content: center;
     align-items: center;
     font-family: Arial, sans-serif;
-    background-color: #f0f4f8;
+    background-color: #2d3142;
     height: 100vh;
     margin: 0;
 }
-  
+
 /* Calculator Container */
 .calculator {
     display: flex;
     flex-direction: column;
-    width: 300px;
-    background-color: #ffffff;
+    width: 315px;
+    background-color: #474b56;
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }
-  
+
 /* Display */
 .display {
     background-color: #222;
@@ -31,68 +31,69 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    border-bottom: 2px solid #ccc;
+    /* remove border if you like a seamless look */
+    border-bottom: none;
 }
-  
+
 /* Grid Layout */
-  .grid {
+    .grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    /* We’ll define 5 “rows,” each 60px tall (adjust as desired) */
     grid-auto-rows: 60px;
-    gap: 10px;
-    padding: 15px;
-    background-color: #f1f5f9;
+    gap: 12px;
+    padding: 20px;
+    background-color: #0d4857; 
     box-sizing: border-box;
 }
-  
+
 /* General Button Styling */
 .grid button {
     font-size: 1.2rem;
-    background-color: #e8ebed;
+    background-color: #eef0f3;
     border: none;
     border-radius: 10px;
-    color: #333;
+    color: #444;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
     outline: none;
+    padding: 0.5rem;
 }
 
 /* Hover and Active States */
 .grid button:hover {
-    background-color: #d1d5db;
+    background-color: #dce0e3;
 }
 .grid button:active {
     transform: scale(0.95);
 }
-  
+
 /* Operators */
 button.operators {
-    background-color: #f9c74f;
+    background-color: #f5b335; 
     color: #fff;
 }
 button.operators:hover {
-    background-color: #f6b042;
+    background-color: #f1a82a;
 }
-  
+
 /* Clear */
 button.clear {
-    background-color: #e63946;
+    background-color: #dd2c38; 
     color: #fff;
 }
 button.clear:hover {
-    background-color: #d62839;
+background-color: #c02331;
 }
-  
+
 /* Equals */
 button.equals {
-    background-color: #38b000;
+    background-color: #30a000; 
     color: #fff;
 }
 button.equals:hover {
-    background-color: #2a9d00;
+    background-color: #2a8f00;
 }
-  
+
 /* Backspace */
 button.backspace {
     background-color: #666;
@@ -101,10 +102,10 @@ button.backspace {
 button.backspace:hover {
     background-color: #555;
 }
-  
+
 /* Spans two rows */
 .plus {
-    grid-row: 4 / span 2;    
-    grid-column: 4;          
+    grid-row: 4 / span 2;
+    grid-column: 4;
 }
   
