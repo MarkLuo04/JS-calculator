@@ -135,6 +135,39 @@ function handleOperatorClick(e) {
   resetDisplay = true;
 }
 
+// Handles Keyboard Inputs
+function handleDigitFromKeyboard(digit) {
+  // If display is "Error", reset first
+  if (displayValue === "Error") {
+    displayValue = "0";
+    num1 = null;
+    num2 = null;
+    operator = null;
+  }
+
+  // Prevent multiple decimals
+  if (digit === "." && displayValue.includes(".")) {
+    return;
+  }
+
+  // If we reached 12 characters, don't add any more
+  if (displayValue.length >= 12 && !resetDisplay) {
+    return;
+  }
+
+  if (resetDisplay) {
+    displayValue = digit;
+    resetDisplay = false;
+  } else if (displayValue === "0" && digit !== ".") {
+    displayValue = digit;
+  } else {
+    displayValue += digit;
+  }
+
+  // No formatting when inputting, just like handleDigitClick
+  updateDisplayNoFormat();
+}
+
 // Handle Equals
 function handleEqualsClick() {
   if (operator && num1 !== null) {
@@ -234,3 +267,17 @@ clearButton.addEventListener("click", handleClearClick);
 
 const backspaceButton = document.querySelector(".backspace");
 backspaceButton.addEventListener("click", handleBackspaceClick);
+
+
+// Keydown listeners for digits, decimal and backspace
+document.addEventListener("keydown", (e) => {
+  if (e.key >= "0" && e.key <= "9") {
+    // If the user presses 0-9
+    handleDigitFromKeyboard(e.key);
+  } else if (e.key === ".") {
+    // Decimal point
+    handleDigitFromKeyboard(".");
+  } else if (e.key === "Backspace") {
+    handleBackspaceClick();
+  }
+});
