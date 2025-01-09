@@ -32,52 +32,63 @@ function updateDisplayNoFormat() {
 function updateDisplay() {
   const display = document.querySelector(".display");
 
-  // Only format if it's not error 
   if (displayValue !== "Error") {
     displayValue = formatDisplayValue(displayValue);
   }
-
   display.textContent = displayValue;
 }
 
-// Format display numbers
+// Format integers
 function formatDisplayValue(value) {
-    if (value === "Error" || isNaN(value)) return "Error";
-    const num = parseFloat(value);
-    if (!isFinite(num)) return "Error";
-  
-    // 1) If the result is an integer (e.g., 4), just return it if it fits:
+  // Return "Error" if invalid
+  if (value === "Error" || isNaN(value)) return "Error";
+  const num = parseFloat(value);
+  if (!isFinite(num)) return "Error";
+
+  // Plain integer unless it exceeds 12 digits
+  if (Math.abs(num) < 1e11) {
+    // If integer & short enough
     if (Number.isInteger(num)) {
-      const normal = num.toString();
-      if (normal.length <= 12) return normal;
-      // Otherwise, fall back to exponential with a length check:
-      for (let i = 12; i >= 1; i--) {
-        const candidate = num.toExponential(i);
-        if (candidate.length <= 12) return candidate;
-      }
-      return num.toExponential(1);
+      const intString = num.toString();
+      if (intString.length <= 12) return intString;
+      // Otherwise we trim digits from the integer until it fits
+      return trimDecimal(intString);
     }
-  
-    // 2) For non-integers, try up to 12 decimals in plain form, then check length:
-    let normal = num.toFixed(12);
-    normal = normal.replace(/(\.\d*?[1-9])0+$/, "$1"); // remove trailing zeros
-    normal = normal.replace(/\.$/, "");               // remove trailing dot if any
-    if (normal.length <= 12) return normal;
-  
-    // 3) If it's still too long or too big/small, switch to exponential:
-    for (let i = 12; i >= 1; i--) {
-      const candidate = num.toExponential(i);
-      if (candidate.length <= 12) return candidate;
-    }
-    return num.toExponential(1);
+
+    // Non-integer up to 15 decimals
+    let dec = num.toFixed(15);
+    // Remove trailing zeros
+    dec = dec.replace(/(\.\d*?[1-9])0+$/, "$1").replace(/\.$/, "");
+    
+    // If it fits, use it
+    if (dec.length <= 12) return dec;
+    // Otherwise trim
+    return trimDecimal(dec);
+  }
+
+  // Exponential notation
+  for (let i = 15; i >= 1; i--) {
+    const expStr = num.toExponential(i);
+    if (expStr.length <= 12) return expStr;
+  }
+  // If that fails, minimal exponent
+  return num.toExponential(1);
 }
 
+// Trims integer string down to 12 digits
+function trimDecimal(str) {
+  if (str.length <= 12) return str;
+  while (str.length > 12) {
+    str = str.slice(0, -1);
+  }
+  // If we end on a decimal, remove it
+  return str.replace(/\.$/, "");
+}
 
 // Handles digits
 function handleDigitClick(e) {
   const digit = e.target.getAttribute("data-value");
 
-  // If display shows Error, reset
   if (displayValue === "Error") {
     displayValue = "0";
     num1 = null;
@@ -104,7 +115,6 @@ function handleDigitClick(e) {
     displayValue += digit;
   }
 
-  // No formatting when inputting
   updateDisplayNoFormat();
 }
 
@@ -112,34 +122,26 @@ function handleDigitClick(e) {
 function handleOperatorClick(e) {
   const selectedOperator = e.target.getAttribute("data-value");
 
-  // First time an operator is pressed
   if (num1 === null) {
     num1 = parseFloat(displayValue);
-  } 
-  // If we already have a num1 and just entered another number
-  else if (!resetDisplay) {
+  } else if (!resetDisplay) {
     num2 = parseFloat(displayValue);
     const result = operate(operator, num1, num2);
     displayValue = result.toString();
-    num1 = (result === "Error") ? null : result; 
+    num1 = (result === "Error") ? null : result;
     updateDisplay();
   }
-
   operator = selectedOperator;
-  resetDisplay = true; // next digit press starts a new number
+  resetDisplay = true;
 }
 
 // Handle Equals
 function handleEqualsClick() {
   if (operator && num1 !== null) {
     num2 = parseFloat(displayValue) || 0;
-
     const result = operate(operator, num1, num2);
     displayValue = (result === "Error") ? "Error" : result.toString();
-    // After pressing equals, apply format
     updateDisplay();
-
-    // Prepare for continued calculations
     num1 = (result === "Error") ? null : result;
     num2 = null;
     operator = null;
@@ -166,13 +168,10 @@ function operate(op, a, b) {
 // Handle Square Root
 function handleSqrtClick() {
   const currentNum = parseFloat(displayValue);
-
   const result = squareRoot(currentNum);
   displayValue = (result === "Error") ? "Error" : result.toString();
-  // After sqrt, we apply format
   updateDisplay();
 
-  // If not an error, store as num1
   if (result !== "Error") {
     num1 = result;
   } else {
@@ -187,7 +186,6 @@ function handleSqrtClick() {
 function handleBackspaceClick() {
   if (displayValue === "Error") {
     displayValue = "0";
-    // No-format update when manually editing
     updateDisplayNoFormat();
     return;
   }
@@ -198,9 +196,8 @@ function handleBackspaceClick() {
   ) {
     displayValue = "0";
   } else {
-    displayValue = displayValue.slice(0, -1); 
+    displayValue = displayValue.slice(0, -1);
   }
-
   updateDisplayNoFormat();
 }
 
