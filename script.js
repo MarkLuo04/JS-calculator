@@ -4,6 +4,7 @@ let num1 = null;
 let num2 = null;
 let operator = null;
 let resetDisplay = false;
+let justPressedEquals = false; 
 
 // Basic Operations
 function add(a, b) {
@@ -87,6 +88,11 @@ function trimDecimal(str) {
 function handleDigitClick(e) {
   const digit = e.target.getAttribute("data-value");
 
+  // Prevents input of digits after a calculation
+  if (justPressedEquals) {
+    return;
+  }
+
   if (displayValue === "Error") {
     displayValue = "0";
     num1 = null;
@@ -118,23 +124,37 @@ function handleDigitClick(e) {
 
 // Handle Operator Click
 function handleOperatorClick(e) {
+  justPressedEquals = false;
+
   const selectedOperator = e.target.getAttribute("data-value");
 
+  // If num1 is null, set it from displayValue
   if (num1 === null) {
     num1 = parseFloat(displayValue);
-  } else if (!resetDisplay) {
+  } 
+  // If we have an operator set and the user just typed a number 
+  // we do a partial calculation first
+  else if (!resetDisplay) {
     num2 = parseFloat(displayValue);
     const result = operate(operator, num1, num2);
     displayValue = result.toString();
     num1 = (result === "Error") ? null : result;
     updateDisplay();
   }
+  // Now set the new operator 
   operator = selectedOperator;
   resetDisplay = true;
 }
 
+
 // Handles digits inputted from keyboard
 function handleDigitFromKeyboard(digit) {
+
+  // Prevents input of digits after a calculation
+  if (justPressedEquals) {
+    return;
+  }
+
   if (displayValue === "Error") {
     displayValue = "0";
     num1 = null;
@@ -164,6 +184,8 @@ function handleDigitFromKeyboard(digit) {
 
 // Handles operators from keyboard input
 function handleOperatorFromKeyboard(selectedOperator) {
+  justPressedEquals = false;
+
   if (num1 === null) {
     num1 = parseFloat(displayValue);
   } else if (!resetDisplay) {
@@ -177,18 +199,23 @@ function handleOperatorFromKeyboard(selectedOperator) {
   resetDisplay = true;
 }
 
-
 // Handle Equals
 function handleEqualsClick() {
+  // If we have an operator and num1 is not null
   if (operator && num1 !== null) {
     num2 = parseFloat(displayValue) || 0;
     const result = operate(operator, num1, num2);
+
     displayValue = (result === "Error") ? "Error" : result.toString();
     updateDisplay();
+
+    // Prepare for next calculation chain
     num1 = (result === "Error") ? null : result;
     num2 = null;
     operator = null;
-    resetDisplay = true;
+
+    resetDisplay = true; 
+    justPressedEquals = true;
   }
 }
 
@@ -252,6 +279,8 @@ function handleClearClick() {
   operator = null;
   resetDisplay = false;
   updateDisplayNoFormat();
+  // Ensuring we can type digits after
+  justPressedEquals = false;
 }
 
 // Mapping keys to values
@@ -329,7 +358,7 @@ document.addEventListener("keydown", (e) => {
     handleBackspaceClick();
   } 
   // operators, equals, clear, and sqrt
-  else if (e.key === "Enter" || e.key === "NumpadEnter") {
+  else if (e.key === "Enter" || e.key === "NumpadEnter" || e.key === "=") {
     handleEqualsClick();
   } else if (e.key === "+") {
     handleOperatorFromKeyboard("+");
