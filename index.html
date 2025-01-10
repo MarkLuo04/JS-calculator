@@ -8,7 +8,15 @@
 </head>
 <body>
   <div class="calculator">
-    <div class="display">0</div>
+    <!--Calculator display-->
+    <div class="display">
+      <!-- Operator display -->
+      <span class="operator-display"></span>
+      <!-- Input display -->
+      <span class="main-display">0</span>
+    </div>
+
+    <!-- Calculator Grid -->
     <div class="grid">
       <!-- Row 1 -->
       <button class="clear" data-value="clear">AC</button>
@@ -37,6 +45,7 @@
       <!-- Row 5 -->
       <button class="nums" data-value="0">0</button>
       <button class="nums" data-value=".">.</button>
+      <button class="toggle-sign" data-value="toggle-sign">±</button>
       <button class="equals" data-value="=">=</button>
     </div>
   </div>

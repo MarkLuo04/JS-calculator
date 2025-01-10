@@ -20,6 +20,8 @@
   - **\*** → Multiplication  
   - **/** → Division  
   - **s** (or **S**) → Square Root
+- **Sign Toggle** 
+  Press '_' to toggle between positive and negative integers
 - **Backspace**  
   Removes the last digit in the display.  
 - **Enter**, **NumpadEnter**, or **=**  

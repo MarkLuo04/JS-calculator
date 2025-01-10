@@ -5,6 +5,8 @@ let num2 = null;
 let operator = null;
 let resetDisplay = false;
 let justPressedEquals = false; 
+let typedNumberAfterOperator = false;
+
 
 // Basic Operations
 function add(a, b) {
@@ -23,10 +25,26 @@ function squareRoot(a) {
   return a < 0 ? "Error" : Math.sqrt(a);
 }
 
-// Updating display for initial inputs (no formatting)
+// Choosing an operation
+function operate(op, a, b) {
+  switch (op) {
+    case "+":
+      return add(a, b);
+    case "-":
+      return subtract(a, b);
+    case "*":
+      return multiply(a, b);
+    case "/":
+      return divide(a, b);
+    default:
+      return null;
+  }
+}
+
+// Updating display for initial inputs (no numerical formatting)
 function updateDisplayNoFormat() {
   const display = document.querySelector(".display");
-  display.textContent = displayValue;
+  mainDisplay.textContent = displayValue;
 }
 
 // Update Display
@@ -36,7 +54,7 @@ function updateDisplay() {
   if (displayValue !== "Error") {
     displayValue = formatDisplayValue(displayValue);
   }
-  display.textContent = displayValue;
+  mainDisplay.textContent = displayValue;
 }
 
 // Format integers 
@@ -119,33 +137,10 @@ function handleDigitClick(e) {
     displayValue += digit;
   }
 
+  typedNumberAfterOperator = true;
   updateDisplayNoFormat();
+
 }
-
-// Handle Operator Click
-function handleOperatorClick(e) {
-  justPressedEquals = false;
-
-  const selectedOperator = e.target.getAttribute("data-value");
-
-  // If num1 is null, set it from displayValue
-  if (num1 === null) {
-    num1 = parseFloat(displayValue);
-  } 
-  // If we have an operator set and the user just typed a number 
-  // we do a partial calculation first
-  else if (!resetDisplay) {
-    num2 = parseFloat(displayValue);
-    const result = operate(operator, num1, num2);
-    displayValue = result.toString();
-    num1 = (result === "Error") ? null : result;
-    updateDisplay();
-  }
-  // Now set the new operator 
-  operator = selectedOperator;
-  resetDisplay = true;
-}
-
 
 // Handles digits inputted from keyboard
 function handleDigitFromKeyboard(digit) {
@@ -179,12 +174,50 @@ function handleDigitFromKeyboard(digit) {
     displayValue += digit;
   }
 
+  typedNumberAfterOperator = true;
   updateDisplayNoFormat();
+}
+
+// Handle Operator Click
+function handleOperatorClick(e) {
+  justPressedEquals = false;
+
+  // If we haven't typed a new digit yet, do nothing 
+  if (!typedNumberAfterOperator && operator !== null) {
+    return; 
+  }
+
+  const selectedOperator = e.target.getAttribute("data-value");
+
+  // If num1 is null, set it from displayValue
+  if (num1 === null) {
+    num1 = parseFloat(displayValue);
+  } 
+  // If we have an operator set and the user just typed a number 
+  // we do a partial calculation first
+  else if (!resetDisplay) {
+    num2 = parseFloat(displayValue);
+    const result = operate(operator, num1, num2);
+    displayValue = result.toString();
+    num1 = (result === "Error") ? null : result;
+    updateDisplay();
+  }
+  // Now set the new operator 
+  operator = selectedOperator;
+  operatorDisplay.textContent = operator;
+
+  typedNumberAfterOperator = false;
+  resetDisplay = true;
 }
 
 // Handles operators from keyboard input
 function handleOperatorFromKeyboard(selectedOperator) {
   justPressedEquals = false;
+
+  // If we haven't typed a new digit yet, do nothing 
+  if (!typedNumberAfterOperator && operator !== null) {
+    return; 
+  }
 
   if (num1 === null) {
     num1 = parseFloat(displayValue);
@@ -196,8 +229,39 @@ function handleOperatorFromKeyboard(selectedOperator) {
     updateDisplay();
   }
   operator = selectedOperator;
+  operatorDisplay.textContent = operator;
+
+  typedNumberAfterOperator = false;
   resetDisplay = true;
 }
+
+// Toggle for positive/negative integers
+function handleToggleSignClick() {
+  if (displayValue === "Error") {
+    return;
+  }
+
+  // If we haven't typed a new digit yet, do nothing 
+  if (!typedNumberAfterOperator && operator !== null) {
+    return; 
+  }
+
+  // If displayValue is "0", toggling sign does nothing 
+  if (displayValue === "0") {
+    return;
+  }
+
+  if (displayValue.startsWith("-")) {
+    // Remove the leading minus
+    displayValue = displayValue.slice(1);
+  } else {
+    // Prepend minus
+    displayValue = "-" + displayValue;
+  }
+
+  updateDisplayNoFormat(); 
+}
+
 
 // Handle Equals
 function handleEqualsClick() {
@@ -213,25 +277,10 @@ function handleEqualsClick() {
     num1 = (result === "Error") ? null : result;
     num2 = null;
     operator = null;
+    operatorDisplay.textContent = "";
 
     resetDisplay = true; 
     justPressedEquals = true;
-  }
-}
-
-// Choosing an operation
-function operate(op, a, b) {
-  switch (op) {
-    case "+":
-      return add(a, b);
-    case "-":
-      return subtract(a, b);
-    case "*":
-      return multiply(a, b);
-    case "/":
-      return divide(a, b);
-    default:
-      return null;
   }
 }
 
@@ -277,6 +326,8 @@ function handleClearClick() {
   num1 = null;
   num2 = null;
   operator = null;
+  operatorDisplay.textContent = "";
+
   resetDisplay = false;
   updateDisplayNoFormat();
   // Ensuring we can type digits after
@@ -339,6 +390,9 @@ operatorButtons.forEach(btn => {
   }
 });
 
+const operatorDisplay = document.querySelector(".operator-display");
+const mainDisplay = document.querySelector(".main-display");
+
 const equalsButton = document.querySelector(".equals");
 equalsButton.addEventListener("click", handleEqualsClick);
 
@@ -347,6 +401,10 @@ clearButton.addEventListener("click", handleClearClick);
 
 const backspaceButton = document.querySelector(".backspace");
 backspaceButton.addEventListener("click", handleBackspaceClick);
+
+const toggleSignButton = document.querySelector('[data-value="toggle-sign"]');
+toggleSignButton.addEventListener("click", handleToggleSignClick);
+
 
 // Keydown listeners
 document.addEventListener("keydown", (e) => {
@@ -375,6 +433,11 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "s" || e.key === "S") {
     handleSqrtClick();
   }
+  // Toggle sign
+  else if (e.key === "_") { 
+    handleToggleSignClick();
+  }
+
   // Triggers button highlight
   highlightButton(e.key);
 });
