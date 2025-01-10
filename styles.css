@@ -63,8 +63,18 @@ body {
 .grid button:hover {
     background-color: #dce0e3;
 }
+
 .grid button:active {
-    transform: scale(0.95);
+    transform: scale(0.92);
+    background-color: #cfd3d7;
+    box-shadow: inset 0px 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Keyboard Input Press */
+.pressed {
+    transform: scale(0.92) !important;
+    background-color: #cfd3d7 !important;
+    box-shadow: inset 0px 2px 6px rgba(0,0,0,0.2) !important;
 }
 
 /* Operators */

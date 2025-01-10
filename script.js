@@ -254,6 +254,47 @@ function handleClearClick() {
   updateDisplayNoFormat();
 }
 
+// Mapping keys to values
+function mapKeyToDataValue(key) {
+  // Digits, decimal
+  if ((key >= "0" && key <= "9") || key === ".") return key;
+
+  // Backspace, Escape, Enter
+  if (key === "Backspace") return "backspace";
+  if (key === "Escape")   return "clear";
+  if (key === "Enter" || key === "NumpadEnter") return "=";
+
+  // Operators
+  if (key === "+") return "+";
+  if (key === "-") return "-";
+  if (key === "/") return "/";
+  if (key === "*") return "*";
+
+  // Square root
+  if (key === "s" || key === "S") return "sqrt";
+
+  // No match
+  return null;
+}
+
+// Highlights button when pressed through keyboard input
+function highlightButton(key) {
+  const dataValue = mapKeyToDataValue(key);
+  if (!dataValue) return;
+
+  // Find the button with that data value
+  const button = document.querySelector(`[data-value="${dataValue}"]`);
+  if (!button) return;
+
+  button.classList.add("pressed");
+
+  // Remove it after a short delay
+  setTimeout(() => {
+    button.classList.remove("pressed");
+  }, 150);
+}
+
+
 // Event Listeners
 const digitButtons = document.querySelectorAll(".nums");
 digitButtons.forEach(btn => {
@@ -288,7 +329,7 @@ document.addEventListener("keydown", (e) => {
     handleBackspaceClick();
   } 
   // operators, equals, clear, and sqrt
-  else if (e.key === "Enter") {
+  else if (e.key === "Enter" || e.key === "NumpadEnter") {
     handleEqualsClick();
   } else if (e.key === "+") {
     handleOperatorFromKeyboard("+");
@@ -305,5 +346,7 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "s" || e.key === "S") {
     handleSqrtClick();
   }
+  // Triggers button highlight
+  highlightButton(e.key);
 });
 
