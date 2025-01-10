@@ -2,54 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Calculator</title>
+  <title>JS Calculator</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="calculator">
-    <!--Calculator display-->
-    <div class="display">
-      <!-- Operator display -->
-      <span class="operator-display"></span>
-      <!-- Input display -->
-      <span class="main-display">0</span>
-    </div>
 
-    <!-- Calculator Grid -->
-    <div class="grid">
-      <!-- Row 1 -->
-      <button class="clear" data-value="clear">AC</button>
-      <button class="backspace" data-value="backspace">←</button>
-      <button class="operators" data-value="sqrt">√</button>
-      <button class="operators" data-value="/">/</button>
+<div class="flip-container">
+  <div class="flip-card">
+    <!-- Calculator (Front) -->
+    <div class="flip-card-front">
+      <div class="calculator">
+        <!-- Display -->
+        <div class="display">
+          <span class="operator-display"></span>
+          <span class="main-display">0</span>
+        </div>
 
-      <!-- Row 2 -->
-      <button class="nums" data-value="7">7</button>
-      <button class="nums" data-value="8">8</button>
-      <button class="nums" data-value="9">9</button>
-      <button class="operators" data-value="*">×</button>
+        <!-- Grid of Buttons -->
+        <div class="grid">
+          <!-- Row 1 -->
+          <button class="clear" data-value="clear">AC</button>
+          <button class="backspace" data-value="backspace">←</button>
+          <button class="operators" data-value="sqrt">√</button>
+          <button class="operators" data-value="/">/</button>
 
-      <!-- Row 3 -->
-      <button class="nums" data-value="4">4</button>
-      <button class="nums" data-value="5">5</button>
-      <button class="nums" data-value="6">6</button>
-      <button class="operators" data-value="-">-</button>
+          <!-- Row 2 -->
+          <button class="nums" data-value="7">7</button>
+          <button class="nums" data-value="8">8</button>
+          <button class="nums" data-value="9">9</button>
+          <button class="operators" data-value="*">×</button>
 
-      <!-- Row 4 -->
-      <button class="nums" data-value="1">1</button>
-      <button class="nums" data-value="2">2</button>
-      <button class="nums" data-value="3">3</button>
-      <button class="operators plus" data-value="+">+</button>
+          <!-- Row 3 -->
+          <button class="nums" data-value="4">4</button>
+          <button class="nums" data-value="5">5</button>
+          <button class="nums" data-value="6">6</button>
+          <button class="operators" data-value="-">-</button>
 
-      <!-- Row 5 -->
-      <button class="nums" data-value="0">0</button>
-      <button class="nums" data-value=".">.</button>
-      <button class="toggle-sign" data-value="toggle-sign">±</button>
-      <button class="equals" data-value="=">=</button>
-    </div>
-  </div>
+          <!-- Row 4 -->
+          <button class="nums" data-value="1">1</button>
+          <button class="nums" data-value="2">2</button>
+          <button class="nums" data-value="3">3</button>
+          <button class="operators plus" data-value="+">+</button>
 
-  <script src="script.js"></script>
+          <!-- Row 5 -->
+          <button class="nums" data-value="0">0</button>
+          <button class="nums" data-value=".">.</button>
+          <button class="toggle-sign" data-value="toggle-sign">±</button>
+          <button class="equals" data-value="=">=</button>
+        </div>
+      </div>
+      
+      <!-- Instructions Button -->
+      <button class="instructions-btn">Instructions</button>
+    </div> 
+
+    <!-- Instructions screen (Back) -->
+    <div class="flip-card-back">
+      <h2>Calculator Instructions</h2>
+      <ul>
+        <li><strong>Digits:</strong> Press (0–9)</li>
+        <li><strong>Operators:</strong> Press (+, -, *, /)</li>
+        <li><strong>Backspace:</strong> Press <em>Backspace</em></li>
+        <li><strong>Clear (AC):</strong> Press <em>Escape</em></li>
+        <li><strong>Equals (=):</strong> Press <em>Enter</em> or <em>=</em></li>
+        <li><strong>Square Root (√):</strong> Press <em>S</em></li>
+        <li><strong>± Toggle:</strong> Press <em>_</em></li>
+      </ul>
+      <!-- Button to flip back to the calculator -->
+      <button class="back-to-calc">Back to Calculator</button>
+    </div> 
+  </div> 
+
+</div> 
+
+<script src="script.js"></script>
 </body>
 </html>

@@ -8,23 +8,5 @@
 - **Operation chaining**
 - **Keyboard Support** 
 
+Press the **Instructions** button on the calculator for keyboard shortcuts.
 
-## Usage
-- **Digits (0–9)** 
-  Type any digit key to input it into the display 
-- **Decimal (“.”)**  
-  Press `.` to insert a decimal point.  
-- **Operators**  
-  - **+** → Addition  
-  - **-** → Subtraction  
-  - **\*** → Multiplication  
-  - **/** → Division  
-  - **s** (or **S**) → Square Root
-- **Sign Toggle** 
-  Press '_' to toggle between positive and negative integers
-- **Backspace**  
-  Removes the last digit in the display.  
-- **Enter**, **NumpadEnter**, or **=**  
-  Performs the calculation
-- **Escape**  
-  AC (clear everything).

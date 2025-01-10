@@ -405,9 +405,25 @@ backspaceButton.addEventListener("click", handleBackspaceClick);
 const toggleSignButton = document.querySelector('[data-value="toggle-sign"]');
 toggleSignButton.addEventListener("click", handleToggleSignClick);
 
+const flipCard = document.querySelector(".flip-card");
+const instructionsBtn = document.querySelector(".instructions-btn");
+const backToCalcBtn = document.querySelector(".back-to-calc");
+
+instructionsBtn.addEventListener("click", () => {
+  flipCard.classList.add("flipped");
+});
+
+backToCalcBtn.addEventListener("click", () => {
+  flipCard.classList.remove("flipped");
+});
 
 // Keydown listeners
 document.addEventListener("keydown", (e) => {
+  // Prevents input when card flipped
+  if (flipCard.classList.contains("flipped")) {
+    return;
+  }
+
   if (e.key >= "0" && e.key <= "9") {
     handleDigitFromKeyboard(e.key);
   } else if (e.key === ".") {
